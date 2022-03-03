@@ -1,16 +1,16 @@
-<style>
+<!-- <style>
 r { color: Red }
 o { color: Orange }
 g { color: Green }
 </style>
-
+ -->
 # <g> Twin Causal Model
 ![Twin Causal](./images/twin_causal_icon.png)
 ---------------------------------------------------
 
 <!-- <img src="./images/twin_causal_icon.png" alt="logo" width="200"/>
 <img src="./images/twin_causal_icon.png" alt="drawing" style="width:200px;"/> -->
-#### _Authors: Belbahri, M.*, Sharoff. P*, Gandouet, O., 
+#### _Authors: Belbahri, M.<sup>*</sup>, Sharoff. P <sup>*</sup>, Gandouet, O., 
 
 *Equally contributing authors
 
@@ -286,7 +286,7 @@ JOSS Paper: Twin-Causal: Deep Learning based Twin model for Uplift .
 
 
 
-# Working Area
+<!-- # Working Area
 
 For data generators
 https://scikit-learn.org/stable/datasets/toy_dataset.html
@@ -294,10 +294,11 @@ https://scikit-learn.org/stable/datasets/toy_dataset.html
 <span style="color:blue">some *blue* text</span>.
 
 "And here's to you, <span style="background-color:green">Testing green</span>, 
+ -->
 
-
-### Legends TODOs:
+<!-- ### Legends TODOs:
 
 - <r>TODO:</r> Important thing to do
 - <o>TODO:</o> Less important thing to do
 - <g>DONE:</g> Go 
+ -->
