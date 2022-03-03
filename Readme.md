@@ -278,23 +278,5 @@ JOSS Paper: Twin-Causal Net: Deep Learning based Twin model for Uplift .
  year={2011}
 } -->
 ```
-Please use the weblink in the meanwhile to cite our software.
 
 &copy; 2022 Twin-Causal Developers (MIT License)
-
-<!-- # Working Area
-
-For data generators
-https://scikit-learn.org/stable/datasets/toy_dataset.html
-
-<span style="color:blue">some *blue* text</span>.
-
-"And here's to you, <span style="background-color:green">Testing green</span>, 
- -->
-
-<!-- ### Legends TODOs:
-
-- <r>TODO:</r> Important thing to do
-- <o>TODO:</o> Less important thing to do
-- <g>DONE:</g> Go 
- -->
