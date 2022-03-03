@@ -10,7 +10,7 @@ g { color: Green }
 
 <!-- <img src="./images/twin_causal_icon.png" alt="logo" width="200"/>
 <img src="./images/twin_causal_icon.png" alt="drawing" style="width:200px;"/> -->
-#### _Authors: Belbahri, M.<sup>*</sup>, Sharoff. P <sup>*</sup>, Gandouet, O., 
+### Authors: Belbahri, M.<sup>* </sup>, Sharoff. P <sup>* </sup>, Gandouet, O., 
 
 *Equally contributing authors
 
@@ -263,9 +263,7 @@ $\hspace{1cm}$ Mouloud Belbahri, Olivier Gandouet, Alejandro Murua, Vahid Partov
 ### **Citing**
 If you use twin-causal in a scientific publication, we would appreciate citations to the following paper:
 
-
-
-JOSS Paper: Twin-Causal: Deep Learning based Twin model for Uplift .
+JOSS Paper: Twin-Causal Net: Deep Learning based Twin model for Uplift .
 
 ```
 @article{twin-causal,
@@ -280,11 +278,9 @@ JOSS Paper: Twin-Causal: Deep Learning based Twin model for Uplift .
  year={2011}
 }
 ```
-* Note: This is a placeholder bib information, please use the weblink in the meanwhile to cite our software.
+Please use the weblink in the meanwhile to cite our software.
 
-&copy; 2021 Twin-Causal Developers (MIT License)
-
-
+&copy; 2022 Twin-Causal Developers (MIT License)
 
 <!-- # Working Area
 
