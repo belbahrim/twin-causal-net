@@ -130,7 +130,7 @@ Simply run command,
 
 in the test directory from the terminal. It automatically runs all the test modules from the test directory.
 
-**Other information**
+<!-- **Other information**
 
 Here is the following, parameter information used to generate the test
 
@@ -138,7 +138,7 @@ Here is the following, parameter information used to generate the test
 
 #### NOTE: For now, the non-prunning eff. no. of neurons stats are specifically set to fake values
 
-
+ -->
 </br> 
 </br> 
 </br> 
