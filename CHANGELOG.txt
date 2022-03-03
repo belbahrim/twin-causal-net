@@ -1,0 +1,33 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.2.1]
+### Added
+- Support for matplotlib based offline metric plots
+
+## [1.2]
+### Changed
+- Syntax specified by object instance
+
+## [1.0.0] 
+### Added
+- Complete packaging from twincausal.
+
+
+### Changed
+- Fixed the CPU compatibility.
+
+
+### Removed
+- placeholder.
+
+
+## [0.0.3]
+### Added
+- Native support for importing the package in dev mode
+- Included development instruction to run the modules
