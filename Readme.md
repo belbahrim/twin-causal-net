@@ -256,13 +256,13 @@ To avoid the problem of overfitting, both structured prunning and unstructured p
 Model supports numpy arrays int or floats for data injestion.   
 
 
-### **Reference**
+### **Reference** and **Citing**
 **A Twin Neural Model for Uplift**  </br>
-$\hspace{1cm}$ Mouloud Belbahri, Olivier Gandouet, Alejandro Murua, Vahid Partovi Nia
+Mouloud Belbahri, Olivier Gandouet, Alejandro Murua, Vahid Partovi Nia
 
-### **Citing**
-If you use twin-causal in a scientific publication, we would appreciate citations to the following paper:
-
+ 
+If you use twin-causal in a scientific publication, we would appreciate citations to this paper and we have an Open Source Paper in the works for JOSS, In the meanwhile please use the weblink to cite our software.
+<!-- 
 JOSS Paper: Twin-Causal Net: Deep Learning based Twin model for Uplift .
 
 ```
@@ -276,7 +276,7 @@ JOSS Paper: Twin-Causal Net: Deep Learning based Twin model for Uplift .
  volume={12},
  pages={2825--2830},
  year={2011}
-}
+} -->
 ```
 Please use the weblink in the meanwhile to cite our software.
 
