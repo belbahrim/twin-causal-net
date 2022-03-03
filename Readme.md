@@ -10,9 +10,9 @@ g { color: Green }
 
 <!-- <img src="./images/twin_causal_icon.png" alt="logo" width="200"/>
 <img src="./images/twin_causal_icon.png" alt="drawing" style="width:200px;"/> -->
-#### _Authors: Belbahri, M., Gandouet, O., and Sharoff. P._
+#### _Authors: Belbahri, M.*, Sharoff. P*, Gandouet, O., 
 
-<!-- * NOTE: The name of the package and other meta details are subjected to change  -->
+*Equally contributing authors
 
 
 
