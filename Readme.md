@@ -4,31 +4,45 @@ o { color: Orange }
 g { color: Green }
 </style>
  -->
-# <g> Twin Causal Model
+# <g> TwinCausalNet
 ![Twin Causal](./images/twin_causal_icon.png)
 ---------------------------------------------------
 
 <!-- <img src="./images/twin_causal_icon.png" alt="logo" width="200"/>
 <img src="./images/twin_causal_icon.png" alt="drawing" style="width:200px;"/> -->
-### Authors: Belbahri, M.<sup>* </sup>, Sharoff. P <sup>* </sup>, Gandouet, O., 
+### Authors: Belbahri, M.<sup>* </sup>, Gandouet, O.<sup>* </sup>, Sharoff. P <sup>* </sup> 
 
-*Equally contributing authors
+<sup>* </sup>Equally contributing authors, alphabetical order.
 
 
 
-### Development Instruction
+**Requirements**
+
+To setup the conda environment:
+```
+conda env create --file twin-causal-model.yml
+conda activate twin-causal-model
+```
+
+To update installation from the file:
+
+```
+conda env update --file twin-causal-model.yml  --prune
+```
+
+
+**Development Instruction**
 
 #### Install the package in editable developer mode
-Use the following command provided in the snippet in the directory containing setup.py file.    
-This avoids creating a copy in the library directory of the environment and runs locally
+Use the following command provided in the snippet in the directory containing setup.py file. This avoids creating a copy in the library directory of the environment and runs locally.
 
 ```
 pip install -e . 
 (or) pip install --editable . 
 ```
-Once the package is installed, this can be imported as a normal package
+Once the package is installed, it can be imported as any other package.
 
-For eg, to import train from core, use the following command for the version of the package less than 0.0.3
+For example, to import train from core, use the following command for the version of the package less than 0.0.3
 
 ```
 import core.train #deprecated
@@ -71,28 +85,8 @@ To check the successfull instalation and other meta information, use the command
 pip show twincausal
 ```
 
-**1. Requirements**
 
-To Setup the Conda environment:
-```
-conda env create --file twin-causal-model.yml
-conda activate twin-causal-model
-```
-
-To update installation from the file:
-
-```
-conda env update --file twin-causal-model.yml  --prune
-```
-
-
-**2. Generate Synthetic Data**
-
-Ue the script in _generate_and_save_data.py_ in order to change the parameters and create/save a _.csv_ file in local. 
-This will allow to quickly run some simulations.
-
-
-## Example Command Interface
+**Example Command Interface**
 
 ```
 >>> from twincausal.model import twin_causal
@@ -115,7 +109,7 @@ This will allow to quickly run some simulations.
 array([1, 0])
 
 ```
-## Test
+**Test**
 
 **1.1 Testing Requirements**
 
@@ -124,7 +118,7 @@ array([1, 0])
 
 **1.2 Running instructions**
 
-Simply run command,
+Simply run command
 
 ```pytest``` 
 
@@ -143,7 +137,7 @@ Here is the following, parameter information used to generate the test
 </br> 
 </br> 
 
-## Twincausal.model.twin_causal
+### twincausal.model.twin_causal
 
 <!-- ```
 class Twincausal.core.train_sk.genmod(hidden_layer_sizes=(100), activation='relu', *, solver='adam', alpha=0.0001, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, power_t=0.5, max_iter=200, shuffle=True, random_state=None, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1, beta_1=0.9, beta_2=0.999, epsilon=1e-08, n_iter_no_change=10, max_fun=15000)
@@ -154,39 +148,40 @@ class Twincausal.core.train_sk.genmod(hidden_layer_sizes=(100), activation='relu
 
 
 ```
-class twincausal.model.twin_causal(input_size,
-hidden_layer = 1,negative_slope=0.05,nb_neurons = 1024,
-random_seed, max_iter=200,learningRate=0.1, shuffle=True,batch_size=256, struc_prune=1,prune=True, verbose = False,logs=True)
-
+class twincausal.model.twin_causal(input_size, 
+    hlayers=1, negative_slope=0, nb_neurons=128, random_state=1234, max_iter=100, 
+    learningRate=0.1, l_reg_constant=0.0001, gpl_reg_constant=0.0001, shuffle=True, 
+    save_model=False, batch_size=256, struc_prune=1, 
+    loss="uplift_loss", prune=True, verbose=True, 
+    plotit=False, logs=False)
 ```
-[[Source]](https://code.td.com/projects/ADV_PROJ/repos/twin-causal-model/browse?at=refs%2Fheads%2Frefine)
+[[Source]](https://github.com/belbahrim/twin-causal-net)
 
-\
-\
-Twin Networks for modelling Uplifts.
 
-This model optimizes the uplift log-loss function using SGD or PGD.
+
+#### Twin networks for uplift modeling
+
+This model optimizes the uplift log-loss function using stochastic (or proximal) gradient descent.
 
 
 |   	        |   	|   
 |:---	        |:---	|
-|**Parameter:**   	|  Hyperparameters|
-| |  	| 
-|   	|  **hidden_layer: int, default=(2)** </br> The number of hidden layer in the twin networks architecture.|
-| |  <ul> <li>‘(1)’ Twin Network architecture with 1 hidden layer </li> <li>‘(2)’, Smite2, Smite architecture with 2 hidden layers</li> <li>'(0)' Smite 0 - Smite architecture with no hidden layers </li> </ul>	| 
-| |   **activation{‘logistic’, 'leaky_relu'}, default=’leaky_relu’**, </br>  </br> Activation function for the hidden layer.  </br> </br> <ul> <li>‘logistic’, the logistic sigmoid function, returns $f(x) = \frac{1}{(1 + \exp(-x))}$.</li>  <li>‘relu’, the rectified linear unit function, returns $f(x) = \max(0, x)$</li> </ul>	|     
-| |   **negative_slope: float, default= 0.05**, </br>  </br>Negative Slope 	|
-| |   **prune: bool, default= True**, </br>  </br>default= True, Prunning for regularization, reduces the effective number of nodes in the network. Depending upon the value of this value, the following optimizer works </br> </br> <ul> <li>‘True (or) 1’,  PGD.</li> <li>‘False (or) 0’, SGD </br>  	|
+|**Parameter:**   	|  Hyper-parameters|
+| |  	|
+|   	|  **input_size: int** </br> The number of neurons in the input layer (features and treatment variable).|
+|   	|  **hlayers: int, default=1** </br> The number of hidden layers.|
+| |  <ul> <li>‘(1)’ Twin network architecture with 1 hidden layer </li> <li>‘(2)’, Twin network architecture with 2 hidden layers</li> <li>'(0)' Twin network architecture with no hidden layers </li> </ul>	| 
+| |   **negative_slope: float, default=0** </br> The angle of the negative slope for the LeakyReLU activation function. 	|
+| |   **nb_neurons: int, default=128** </br>  The number of neurons in a hidden layer.	|
+| |   **random_state: int, RandomState instance, default=1234**  </br> Determines random number generation for weights and bias initialization and batch sampling in the solvers. Pass an int for reproducible results across multiple function calls.	|
+| |   **prune: bool, default=True**, </br>  Prunning for regularization, reduces the effective number of nodes in the network. Depending upon the value of this value, the following optimizer works </br> </br> <ul> <li>‘True (or) 1’,  PGD.</li> <li>‘False (or) 0’, SGD </br>  	|
 | |   **struc_prune: int, default= 1**, </br>  </br>default= 1, Structured Prunning for regularization, adds l1 or l2 norm as a regularizer in the loss function for optimizing the network parameters. </br> </br> <ul> <li>‘1’, represents L1 regularizer. </li> <li>‘2’, represents L2 regularizer. </br>  	|
-| |   **l1_reg_constant: int, default= 0**, </br>  </br> Regularizer variable which manages the weight on l1 norm as a regularizer in the loss function for optimizing the network parameters. </br> </br>  Values Supported l1_reg_constant $\in$ [0,1]  	|
-| |   **nb_neuron: int, default = 1024**, </br>  </br>default= 0,  Number of Neurons in a layer	|  
-| |   **input_size: int** </br>  </br>Input size of the data	|
+| |   **l1_reg_constant: int, default=0**, </br>  </br> Regularizer variable which manages the weight on l1 norm as a regularizer in the loss function for optimizing the network parameters. </br> </br>  Values Supported l1_reg_constant $\in$ [0,1]  	|
 | |   **max_iter: int, default = 200** </br>  </br>Maximum number of iterations. The solver iterates until convergence (determined by ‘tol’) or this number of iterations. For stochastic solvers (‘sgd’, ‘adam’), note that this determines the number of epochs (how many times each data point will be used), not the number of gradient steps.	|   
 | |   **Optimizer{'SGD', 'PGD'}**, </br>  </br>default='PGD’ Activation function for the hidden layer. ‘identity’, no-op activation, useful to implement linear bottleneck, returns f(x) = x </br> </br> <ul> <li>‘SGD’,  refers to stochastic gradient descent.</li> <li>‘PGD’, the hyperbolic tan function, returns $f(x) = \tanh(x)$.</li> <li>‘relu’, the rectified linear unit function, returns $f(x) = \max(0, x)$ </br> </br> Note: The default optimizer ‘PGD’ works pretty well on relatively large datasets (with thousands of training samples or more) in terms of both training time and validation score. For small datasets, however, ‘SGD’ can converge faster. </li> </ul>	|   
 | |   **shuffle: bool, default = Ture**, </br>  </br>default= True,  Whether to shuffle samples in each iteration. Only used when solver=’sgd’ or ‘adam’.	|  
 | |   **batch_size: int, default=256**, </br>  </br>Size of minibatches for stochastic optimizers. If the solver is ‘lbfgs’, the classifier will not use minibatch.	|
 | |   **learningRate: int, default=0.1**, </br>  </br>Learning rate schedule for weight updates. Used alongside the solver SGD and PGD	|
-| |   **random_state: int, RandomState instance,**, </br>  </br>Determines random number generation for weights and bias initialization and batch sampling in the solvers. Pass an int for reproducible results across multiple function calls.	|
 |**Attributes**| <dl>  <dt>**classes_ndarray or list of ndarray of shape (n_classes,)**</dt> <dd>Class labels for each output</dd> </dl>| 
 | |   **activation{‘logistic’, ‘relu’}**, </br>  </br>default=`Leaky relu’ Activation function for the hidden layer.  </br> </br> <ul> <li>‘logistic’, the logistic sigmoid function, returns $f(x) = \frac{1}{(1 + \exp(-x))}$.</li> <li>‘relu’, the rectified linear unit function, returns $f(x) = \max(0, x)$</li> </ul>	|   
 
