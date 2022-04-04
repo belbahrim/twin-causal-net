@@ -180,10 +180,10 @@ This model optimizes the uplift log-loss function using stochastic (or proximal)
 
 ## Methods
 
-|   	        |   	|   
-|:---	        |:---	|
-|**fit**(X, treat, Y, test_size=0.3)   	|  Fits the model to features X, treatment variable treat and outcome variable Y. A proportion of the observations is used for validation. |
-|**predict**(X)   	|  Predicts the uplift using the fitted model. |
+|   	        | 	                                                                                                                                              |   
+|:---	        |:-----------------------------------------------------------------------------------------------------------------------------------------------|
+|**fit**(X, treat, Y, test_size=0.3)   	| Fits the model to features X, treatment variable treat and binary outcome variable Y. A proportion of the observations is used for validation. |
+|**predict**(X)   	| Predicts the uplift using the fitted model.                                                                                                    |
 
 <!--|**generator**(scenario)   	|  Generates data based on Powers et.al . | -->
 
@@ -192,7 +192,7 @@ fit(X, treat, Y, test_size=0.3)
 ```
 [[Source]](https://github.com/belbahrim/twin-causal-net)
 
-Fit the model to data matrix X, treatment T and target Y.
+Fit the model to data matrix ```X```, treatment ```treat``` and binary target ```Y```.
 
 
 |   	        |   	|   
@@ -207,7 +207,7 @@ Fit the model to data matrix X, treatment T and target Y.
 
 ### Notes
 
-The ```twincausal``` library helps to train twin-networks for the prediction of conditional average treatment effects.
+The ```twincausal``` library helps to train twin-networks for the conditional average treatment effects with binary outcomes.
 Each step of the training, it proceeds to update the model parameters in the direction of the gradients to minimize the uplift loss function.  
 To avoid the over-fitting, both structured and unstructured pruning can be used to regularize the model. The model supports numpy arrays int or floats for data ingestion.   
 
