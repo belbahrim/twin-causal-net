@@ -30,6 +30,7 @@ To update installation from the file:
 conda env update --file twin-causal-model.yml  --prune
 ```
 
+For a complete example on how to use the library, please refer to the following [[example]](https://github.com/belbahrim/twin-causal-net/blob/main/examples/twin_causal_examples.ipynb).
 
 **Development Instruction**
 
@@ -89,26 +90,26 @@ pip show twincausal
 **Example Command Interface**
 
 ```
+>>> import twincausal.utils.data as twindata 
 >>> from twincausal.model import twin_causal
 
->>> X = [[0., 0.], [1., 1.]] # features
->>> y = [0, 1] #outcome variable
->>> T = [0,1] #treatment variable
+>>> X, T, Y = twindata.generator(5)  # Generate fake uplift data
+>>> input_size = X.shape[1] + 1  # Number of features + 1 (for treatment indicator)
 
->>> twin_model = twin_causal(input_size,h_layer,negative_slope,nb_neurons,prune)
+>>> twin_model = twin_causal(input_size)
 
->>> twin_model.fit(X)
+>>> twin_model.fit(X, T, Y)
 
 
 ******************** Start epoch 1 **********************
 .
 .
 .
-
->>> twin_model.predict([[2., 2.], [-1., -2.],[1,0]], )
-array([1, 0])
+>>> X_new = X
+>>> pred = twin_model.predict(X_new)
 
 ```
+
 **Test**
 
 **1.1 Testing Requirements**
@@ -120,7 +121,9 @@ array([1, 0])
 
 Simply run command
 
-```pytest``` 
+```
+pytest
+``` 
 
 in the test directory from the terminal. It automatically runs all the test modules from the test directory.
 
@@ -133,145 +136,98 @@ Here is the following, parameter information used to generate the test
 #### NOTE: For now, the non-prunning eff. no. of neurons stats are specifically set to fake values
 
  -->
-</br> 
-</br> 
-</br> 
-
-### twincausal.model.twin_causal
-
-<!-- ```
-class Twincausal.core.train_sk.genmod(hidden_layer_sizes=(100), activation='relu', *, solver='adam', alpha=0.0001, batch_size='auto', learning_rate='constant', learning_rate_init=0.001, power_t=0.5, max_iter=200, shuffle=True, random_state=None, tol=0.0001, verbose=False, warm_start=False, momentum=0.9, nesterovs_momentum=True, early_stopping=False, validation_fraction=0.1, beta_1=0.9, beta_2=0.999, epsilon=1e-08, n_iter_no_change=10, max_fun=15000)
-
-``` -->
 
 
-
+### Twin networks for uplift modeling: twin_causal
 
 ```
-class twincausal.model.twin_causal(input_size, 
-    hlayers=1, negative_slope=0, nb_neurons=128, random_state=1234, max_iter=100, 
-    learningRate=0.1, l_reg_constant=0.0001, gpl_reg_constant=0.0001, shuffle=True, 
-    save_model=False, batch_size=256, struc_prune=1, 
-    loss="uplift_loss", prune=True, verbose=True, 
-    plotit=False, logs=False)
+CLASS twincausal.model.twin_causal(input_size=<required parameter>, hlayers=1, nb_neurons=256, lrelu_slope=0, 
+      batch_size=256, shuffle=True, max_iter=100, learningRate=0.005, reg_type=1, l_reg_constant=0.001,
+      prune=True, gpl_reg_constant=0.0001, loss="uplift_loss", learningCurves=True, save_model=False, 
+      verbose=False, logs=False, random_state=1234)
 ```
 [[Source]](https://github.com/belbahrim/twin-causal-net)
-
-
-
-#### Twin networks for uplift modeling
 
 This model optimizes the uplift log-loss function using stochastic (or proximal) gradient descent.
 
 
 |   	        |   	|   
 |:---	        |:---	|
-|**Parameter:**   	|  Hyper-parameters|
+|**Parameters**   	|  Hyper-parameters|
 | |  	|
-|   	|  **input_size: int** </br> The number of neurons in the input layer (features and treatment variable).|
-|   	|  **hlayers: int, default=1** </br> The number of hidden layers.|
-| |  <ul> <li>‘(1)’ Twin network architecture with 1 hidden layer </li> <li>‘(2)’, Twin network architecture with 2 hidden layers</li> <li>'(0)' Twin network architecture with no hidden layers </li> </ul>	| 
-| |   **negative_slope: float, default=0** </br> The angle of the negative slope for the LeakyReLU activation function. 	|
-| |   **nb_neurons: int, default=128** </br>  The number of neurons in a hidden layer.	|
-| |   **random_state: int, RandomState instance, default=1234**  </br> Determines random number generation for weights and bias initialization and batch sampling in the solvers. Pass an int for reproducible results across multiple function calls.	|
-| |   **prune: bool, default=True**, </br>  Prunning for regularization, reduces the effective number of nodes in the network. Depending upon the value of this value, the following optimizer works </br> </br> <ul> <li>‘True (or) 1’,  PGD.</li> <li>‘False (or) 0’, SGD </br>  	|
-| |   **struc_prune: int, default= 1**, </br>  </br>default= 1, Structured Prunning for regularization, adds l1 or l2 norm as a regularizer in the loss function for optimizing the network parameters. </br> </br> <ul> <li>‘1’, represents L1 regularizer. </li> <li>‘2’, represents L2 regularizer. </br>  	|
-| |   **l1_reg_constant: int, default=0**, </br>  </br> Regularizer variable which manages the weight on l1 norm as a regularizer in the loss function for optimizing the network parameters. </br> </br>  Values Supported l1_reg_constant $\in$ [0,1]  	|
-| |   **max_iter: int, default = 200** </br>  </br>Maximum number of iterations. The solver iterates until convergence (determined by ‘tol’) or this number of iterations. For stochastic solvers (‘sgd’, ‘adam’), note that this determines the number of epochs (how many times each data point will be used), not the number of gradient steps.	|   
-| |   **Optimizer{'SGD', 'PGD'}**, </br>  </br>default='PGD’ Activation function for the hidden layer. ‘identity’, no-op activation, useful to implement linear bottleneck, returns f(x) = x </br> </br> <ul> <li>‘SGD’,  refers to stochastic gradient descent.</li> <li>‘PGD’, the hyperbolic tan function, returns $f(x) = \tanh(x)$.</li> <li>‘relu’, the rectified linear unit function, returns $f(x) = \max(0, x)$ </br> </br> Note: The default optimizer ‘PGD’ works pretty well on relatively large datasets (with thousands of training samples or more) in terms of both training time and validation score. For small datasets, however, ‘SGD’ can converge faster. </li> </ul>	|   
-| |   **shuffle: bool, default = Ture**, </br>  </br>default= True,  Whether to shuffle samples in each iteration. Only used when solver=’sgd’ or ‘adam’.	|  
-| |   **batch_size: int, default=256**, </br>  </br>Size of minibatches for stochastic optimizers. If the solver is ‘lbfgs’, the classifier will not use minibatch.	|
-| |   **learningRate: int, default=0.1**, </br>  </br>Learning rate schedule for weight updates. Used alongside the solver SGD and PGD	|
-|**Attributes**| <dl>  <dt>**classes_ndarray or list of ndarray of shape (n_classes,)**</dt> <dd>Class labels for each output</dd> </dl>| 
-| |   **activation{‘logistic’, ‘relu’}**, </br>  </br>default=`Leaky relu’ Activation function for the hidden layer.  </br> </br> <ul> <li>‘logistic’, the logistic sigmoid function, returns $f(x) = \frac{1}{(1 + \exp(-x))}$.</li> <li>‘relu’, the rectified linear unit function, returns $f(x) = \max(0, x)$</li> </ul>	|   
-
+| |   **input_size: int** </br> The number of neurons in the input layer, that is, the number of features plus one (1) for the treatment variable.|
+| |   **hlayers: int, default=1** </br> The number of hidden layers. <ul> <li>‘0’, twin network architecture with no hidden layers </li> <li>‘1’, twin network architecture with 1 hidden layer **(Optimal implementation)**</li> <li>'2', twin network architecture with 2 hidden layers </li> </ul>	| 
+| |   **nb_neurons: int, default=256** </br> The number of neurons in a hidden layer.	|
+| |   **lrelu_slope: float, default=0** </br> The angle of the negative slope for the LeakyReLU activation function. Default is the ReLU activation.	|
+| |   **batch_size: int, default=256** </br> Size of minibatches for stochastic optimizers.	|
+| |   **shuffle: bool, default=True** </br> Whether to shuffle samples in each iteration.	|
+| |   **max_iter: int, default=100** </br> Maximum number of iterations. The solver iterates until convergence (determined by ‘tol’) or this number of iterations. For stochastic solvers, note that this determines the number of epochs (how many times each data point will be used), not the number of gradient steps.	|
+| |   **learningRate: float, default=0.005** </br> Learning rate schedule for weight updates. Used alongside the solver SGD and PGD	|
+| |   **reg_type: int, default= 1** </br> Regularization; adds L1 or L2 regularization for optimizing the network parameters. </br>  <ul> <li>‘1’, represents L1 regularizer </li> <li>‘2’, represents L2 regularizer  	|
+| |   **l_reg_constant: float, default=0.001** </br> Regularization constant which manages the weight on L1 (or L2) norm as a regularizer in the loss function for optimizing the network parameters. |
+| |   **prune: bool, default=True** Pruning for regularization, reduces the effective number of nodes in the network. Depending upon the value, the following optimizer works <ul> <li>‘True (or) 1’,  PGD </li> <li>‘False (or) 0’, SGD 	|
+| |   **gpl_reg_constant: float, default=0.0001** </br> Regularization constant which manages pruning the hidden-layer's nodes. |
 <!-- Include the best model later -->
 |   	        |   	|   
 |:---	        |:---	|
-|**Parameter:**   	|  Options|
-| |   **save_model: bool, default = False,** </br>  </br>Saves the model for inference, this will enable the flexibility for restoring the model later. The models are saved in .pth file format.|
-| |   **plotit: bool, default = False,** </br>  </br>Generates a matplotlib figures for the training and validation error and uplifts at the end of the training.|        
-| |   **verbose: bool, default = False,** </br>  </br>Whether to print progress messages to stdout.	|
-| |   **logs: bool, default = True,** </br>  </br>Log into tensorboard for monitoring the progress of learning otherwise return a matplotlib object with training curve.	|    
-
+|**Parameters:**   	|  Options|
+| |   **learningCurves: bool, default=True** </br>  Generates a matplotlib figures for the training and validation learning curves (loss and Qini coefficient) at the end of the training.|
+| |   **save_model: bool, default=False** </br>  Saves the model for inference, this will enable the flexibility for restoring the model later. The models are saved in .pth file format.|
+| |   **verbose: bool, default=False** </br>  Whether to print progress messages to stdout.	|
+| |   **logs: bool, default=False** </br>  Log into tensorboard for monitoring the progress of learning otherwise return a matplotlib object with training curve.	|    
+| |   **random_state: int, RandomState instance, default=1234**  </br> Determines random number generation for weights and bias initialization and batch sampling in the solvers. Pass an int for reproducible results across multiple function calls.	|
 
 
 ## Methods
 
 |   	        |   	|   
 |:---	        |:---	|
-|**fit**(X,T,Y)   	|  Fit the model to features X, Treatment T and outcome variable Y. |
-|**predict**(X,T)   	|  Predict the outcome using the model fitted. |
-|**generator**(scenario)   	|  Generates data based on Powers et.al . |
+|**fit**(X, treat, Y, test_size=0.3)   	|  Fits the model to features X, treatment variable treat and outcome variable Y. A proportion of the observations is used for validation. |
+|**predict**(X)   	|  Predicts the uplift using the fitted model. |
+
+<!--|**generator**(scenario)   	|  Generates data based on Powers et.al . | -->
 
 ```
-fit(X,T,Y) 
+fit(X, treat, Y, test_size=0.3) 
 ```
-[[Source]](https://code.td.com/projects/ADV_PROJ/repos/twin-causal-model/browse?at=refs%2Fheads%2Frefine)
+[[Source]](https://github.com/belbahrim/twin-causal-net)
 
-Fit the model to data matrix X, treatment T and target(s) y.
-
+Fit the model to data matrix X, treatment T and target Y.
 
 
 |   	        |   	|   
 |:---	        |:---	|
-|**Parameters:**   	|  **X**: Xndarray or sparse matrix of shape (n_samples, n_features) </br> The input data. | 
-|   	|  **Xndarray or sparse matrix of shape (n_samples, 1)** </br> The input treatment. | 
-|   	|  **Xndarray or sparse matrix of shape (n_samples, 1)** </br> The Outcome variable. | 
-|   	|  **test_split: float, default=0.3** </br> Data Split for test/train | 
+|**Parameters:**   	|  **X** </br> Xndarray or sparse matrix of shape (n_samples, n_features) </br> The input data. | 
+|   	|  **treat** </br> Xndarray or sparse matrix of shape (n_samples, 1) </br> The input treatment. | 
+|   	|  **Y** </br> Xndarray or sparse matrix of shape (n_samples, 1) </br> The outcome variable. | 
+|   	|  **test_size: float, default=0.3** </br> Proportion of the n_samples used for validation. | 
 |**Returns:**   	|  None |  | 
 
 
-```
-generator(scenario) 
-```
-[[Source]](https://code.td.com/projects/ADV_PROJ/repos/twin-causal-model/browse?at=refs%2Fheads%2Frefine)
 
-Generates the data according to different scenarios list
+### Notes
 
-Refer: for more details: Scott Powers, Junyang Qian, Kenneth Jung, Alejandro Schuler, Nigam H Shah, Trevor Hastie, and Robert
-Tibshirani. Some methods for heterogeneous treatment effect estimation in high dimensions. Statistics in
-Medicine, 37(11):1767–1787, 2018.
-
-|   	        |   	|   
-|:---	        |:---	|
-|**Parameters:**   	|  **Scenarios** </br> The input scenarios|  
-|**Returns:**   	|  **Xndarray or sparse matrix of shape (n_samples, n_features)** </br> X - Features. |  | 
-|   	|  **Xndarray or sparse matrix of shape (n_samples, n_features)** </br> T - Treatement Variable. |  | 
-|   	|  **Xndarray or sparse matrix of shape (n_samples, n_features)** </br> Y - Outcome Varaiable. |  | 
+The ```twincausal``` library helps to train twin-networks for the prediction of conditional average treatment effects.
+Each step of the training, it proceeds to update the model parameters in the direction of the gradients to minimize the uplift loss function.  
+To avoid the over-fitting, both structured and unstructured pruning can be used to regularize the model. The model supports numpy arrays int or floats for data ingestion.   
 
 
+### Reference and citing
 
-### **Notes**
+ 
+If you use ```twincausal``` in a scientific publication, we would appreciate citations to the [[arXiv preprint]](https://arxiv.org/pdf/2105.05146.pdf) 
+while we are developing the open source paper for the Journal of Open Source Software (JOSS). In the meantime please use the weblink to cite our software.
 
-Twin Causal library helps to trains a twin causal networks iteratively, where in each step of the training it proceeds to update the model parameters in the direction of the gradients to minimize the uplift loss function.  
-
-To avoid the problem of overfitting, both structured prunning and unstructured prunning can be used to regularize the loss function to shrink the model parameters.
-
-Model supports numpy arrays int or floats for data injestion.   
-
-
-### **Reference** and **Citing**
 **A Twin Neural Model for Uplift**  </br>
 Mouloud Belbahri, Olivier Gandouet, Alejandro Murua, Vahid Partovi Nia
 
- 
-If you use twin-causal in a scientific publication, we would appreciate citations to this paper and we have an Open Source Paper in the works for JOSS, In the meanwhile please use the weblink to cite our software.
-<!-- 
-JOSS Paper: Twin-Causal Net: Deep Learning based Twin model for Uplift .
-
 ```
-@article{twin-causal,
- title={Scikit-learn: Machine Learning in {P}ython},
- author={Pedregosa, F. and Varoquaux, G. and Gramfort, A. and Michel, V.
-         and Thirion, B. and Grisel, O. and Blondel, M. and Prettenhofer, P.
-         and Weiss, R. and Dubourg, V. and Vanderplas, J. and Passos, A. and
-         Cournapeau, D. and Brucher, M. and Perrot, M. and Duchesnay, E.},
- journal={Journal of Machine Learning Research},
- volume={12},
- pages={2825--2830},
- year={2011}
-} -->
+@article{belbahri2021twin-causal,
+  title={A Twin Neural Model for Uplift},
+  author={Belbahri, Mouloud and Gandouet, Olivier and Murua, Alejandro and Partovi Nia, Vahid},
+  journal={arXiv preprint arXiv:2105.05146},
+  year={2021}
+}
 ```
 
 &copy; 2022 Twin-Causal Developers (MIT License)
