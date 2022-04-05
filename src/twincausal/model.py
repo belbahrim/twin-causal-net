@@ -40,20 +40,18 @@ def variable_name(vname):
 
 
 def hyperparameter_value(hyperparameters):
-    # print(hyperparameters)
-    # print(type(hyperparameters[16][1]))
-    # if type(hyperparameters[16][1]) == bool or int:
-    #     print("not working")
     for i in hyperparameters:
         hyperparameter_name = i[0]
         hyperparameter_value = i[1]
         # Printing the int based hyperparameters/ configs used
         if type(hyperparameter_value) == int:
             print('%-25s%-12i' % (hyperparameter_name, hyperparameter_value))
+        # Printing the float based hyperameters/ configs used
+        if type(hyperparameter_value) == float:
+            print('%-25s%-12i' % (hyperparameter_name, hyperparameter_value))
         # Printing the bool based hyperameters/ configs used
         if type(hyperparameter_value) == bool:
             print('%-25s%-12i' % (hyperparameter_name, hyperparameter_value))
-
 
 def update_progress(progress):
     """
@@ -83,16 +81,16 @@ def call(model, inputs_0, inputs_1, treatment):
 
 
 class twin_causal(nn.Module):
-    def __init__(self, input_size, hlayers=1, negative_slope=0, nb_neurons=128, random_state=33, max_iter=0, 
-                 learningRate=0.1, l_reg_constant=0.0001, gpl_reg_constant=0.0001, shuffle=True, save_model=False,
-                 batch_size=256, struc_prune=1,loss = "uplift_loss", prune=True, verbose=True, plotit=False, logs=False):
+    def __init__(self, input_size, hlayers=1, nb_neurons=256, lrelu_slope=0, batch_size=256, shuffle=True, max_iter=100,
+                 learningRate=0.005, reg_type=1, l_reg_constant=0.001, prune=True, gpl_reg_constant=0.0001, loss="uplift_loss",
+                 learningCurves=True, save_model=False, verbose=False, logs=False, random_state=1234):
         super().__init__()
         self.input_size = input_size
         self.hlayers = hlayers
-        self.negative_slope = negative_slope
+        self.lrelu_slope = lrelu_slope
         self.nb_neurons = nb_neurons
         self.prune = prune
-        self.struc_prune = struc_prune
+        self.reg_type = reg_type
         self.epochs = max_iter
         self.shuffle = shuffle
         self.batch_size = batch_size
@@ -105,7 +103,7 @@ class twin_causal(nn.Module):
         self.gpl_reg_constant = gpl_reg_constant
         self.save_model = save_model
         self.logger = Logger("twincausal", "{}".format(nb_neurons))
-        self.plotit = plotit
+        self.learningCurves = learningCurves
         self.list_qini_test = []
 
         linear_cls = nn.Linear if not prune else LinearProximal
@@ -117,10 +115,10 @@ class twin_causal(nn.Module):
         self.fc_output = linear_cls(nb_neurons, 1)
 
         if self.verbose:
-            print("hlayer", self.hlayers)
+            print("hlayers", self.hlayers)
         if hlayers > 1:
             self.prune = False
-            self.nb_neurons_per_layer = int(nb_neurons / 2)  # Make sure this is an integer
+            self.nb_neurons_per_layer = nb_neurons
             self.fc_layer1 = nn.Linear(input_size, self.nb_neurons_per_layer)
             self.fc_layer2 = nn.Linear(self.nb_neurons_per_layer, self.nb_neurons_per_layer)
             self.fc_output = nn.Linear(self.nb_neurons_per_layer, 1)
@@ -130,14 +128,14 @@ class twin_causal(nn.Module):
             x1 = self.fc_layer(x_treat)
             if self.prune:
                 x1 = x1.mul(self.scaling_a - self.scaling_b)
-            x1 = functional.leaky_relu(x1, self.negative_slope)
+            x1 = functional.leaky_relu(x1, self.lrelu_slope)
             x1 = self.fc_output(x1)
             m11 = torch.sigmoid(x1)
 
             x0 = self.fc_layer(x_control)
             if self.prune:
                 x0 = x0.mul(self.scaling_a - self.scaling_b)
-            x0 = functional.leaky_relu(x0, self.negative_slope)
+            x0 = functional.leaky_relu(x0, self.lrelu_slope)
             x0 = self.fc_output(x0)
             m10 = torch.sigmoid(x0)
 
@@ -146,17 +144,15 @@ class twin_causal(nn.Module):
             return m1t, m11, m10
         elif self.hlayers == 2:
             x1 = self.fc_layer1(x_treat)
-            x1 = functional.leaky_relu(x1, self.negative_slope)
-            # x1 = torch.sigmoid(x1)
+            x1 = functional.leaky_relu(x1, self.lrelu_slope)
             x1 = self.fc_layer2(x1)
-            x1 = functional.leaky_relu(x1, self.negative_slope)
+            x1 = functional.leaky_relu(x1, self.lrelu_slope)
             x1 = self.fc_output(x1)
 
             x0 = self.fc_layer1(x_control)
-            x0 = functional.leaky_relu(x0, self.negative_slope)
-            # x0 = torch.sigmoid(x0)
+            x0 = functional.leaky_relu(x0, self.lrelu_slope)
             x0 = self.fc_layer2(x0)
-            x0 = functional.leaky_relu(x0, self.negative_slope)
+            x0 = functional.leaky_relu(x0, self.lrelu_slope)
             x0 = self.fc_output(x0)
 
             x_return = x1 * treat + x0 * (1.0 - treat)
@@ -168,23 +164,21 @@ class twin_causal(nn.Module):
             return x_return, p1, p0
         else:
             x1 = self.fc_layer1(x_treat)
-            x1 = functional.leaky_relu(x1, self.negative_slope)
-            # x1 = torch.sigmoid(x1)
+            x1 = functional.leaky_relu(x1, self.lrelu_slope)
             x1 = self.fc_layer2(x1)
-            x1 = functional.leaky_relu(x1, self.negative_slope)
+            x1 = functional.leaky_relu(x1, self.lrelu_slope)
             for x in range(self.hlayers - 2):
                 x1 = self.fc_layer2(x1)
-                x1 = functional.leaky_relu(x1, self.negative_slope)
+                x1 = functional.leaky_relu(x1, self.lrelu_slope)
             x1 = self.fc_output(x1)
 
             x0 = self.fc_layer1(x_control)
-            x0 = functional.leaky_relu(x0, self.negative_slope)
-            # x0 = torch.sigmoid(x0)
+            x0 = functional.leaky_relu(x0, self.lrelu_slope)
             x0 = self.fc_layer2(x0)
-            x0 = functional.leaky_relu(x0, self.negative_slope)
+            x0 = functional.leaky_relu(x0, self.lrelu_slope)
             for x in range(self.hlayers - 2):
                 x0 = self.fc_layer2(x0)
-                x0 = functional.leaky_relu(x0, self.negative_slope)
+                x0 = functional.leaky_relu(x0, self.lrelu_slope)
             x0 = self.fc_output(x0)
 
             x_return = x1 * treat + x0 * (1.0 - treat)
@@ -199,20 +193,13 @@ class twin_causal(nn.Module):
 
         if X.shape[1] != self.input_size - 1:
             raise ValueError('The number of inputs provided is different from the input size of the network')
-        # print(self.__dict__)
-        # print(self.__dict__.items())
         list_variable_instance = list(self.__dict__.items())
         list_variable_instance = list_variable_instance[9:]
-        # print(list_variable_instance)
         hyperparameter_value(list_variable_instance)
-        # variable_instance = list(self.__dict__.keys())
-        # # variable_instance_values = list(self.__dict__.values)
-        # print(variable_instance[9:])
-        # print(variable_instance_values[9:])
+
         seed = self.seed
-        struc_prune = self.struc_prune
+        reg_type = self.reg_type
         device = device_agno()
-        #batch_size = 256
         standardize = False
         con = np.concatenate((Y, treat, X), axis=1)
         df = pd.DataFrame(con)
@@ -242,14 +229,14 @@ class twin_causal(nn.Module):
         train_dataloader = DataLoader(train_dataset, batch_size, shuffle)
         test_dataloader = DataLoader(test_dataset, batch_size, shuffle)
 
-        input_size = self.input_size # df.shape[1] - 1
+        input_size = self.input_size
         nb_samples = df.shape[0]  # for reporting only
 
         torch.manual_seed(seed)
 
         learningRate = self.learningRate
         prune = self.prune
-        criterion = torch.nn.BCELoss()  # .cuda()
+        criterion = torch.nn.BCELoss()
         criterion_uplift = indirect_loss
         if self.loss == "uplift_loss":
             criterion_new = uplift_loss
@@ -289,16 +276,16 @@ class twin_causal(nn.Module):
 
         _, _, _, _, _, training_err_list, qini_list_epoch = self.training1(train_dataloader, test_dataloader, criterion,
                                                                            criterion_uplift, criterion_new, optimizer,
-                                                                           prune, struc_prune)
+                                                                           prune, reg_type)
         self.list_qini_test = qini_list_epoch
         return training_err_list, qini_list_epoch
 
     def training1(self, train_dataloader, test_dataloader, criterion, criterion_uplift, criterion_new, optimizer, prune,
-                  struc_prune=1):
+                  reg_type=1):
         logs = self.logs
         model_type = 'IE'
         l_reg_constant = self.l_reg_constant  # regularization on the weights
-        gpl_reg_constant = self.gpl_reg_constant
+        gpl_reg_constant = self.gpl_reg_constant  # regularization on the scaling factors
         reg_constant = 0
         epochs = self.epochs
         device = device_agno()
@@ -313,13 +300,13 @@ class twin_causal(nn.Module):
         nb_non_zero_neurons_per_epoch = []
 
         # Create a logger to save the runs for Tensorboard
-        if logs:
-            train_err_list = []
-            test_err_list = []
-            train_err_list_check = []
-            qini_list = []
-            val_err_list = []
-            val_qini_list = []
+        # if logs:
+        train_err_list = []
+        test_err_list = []
+        train_err_list_check = []
+        qini_list = []
+        val_err_list = []
+        val_qini_list = []
         stopping_flag = 0
         for epoch in range(epochs):
             if self.verbose:
@@ -383,12 +370,12 @@ class twin_causal(nn.Module):
                     group_lasso_reg = (self.scaling_a - self.scaling_b).abs().sum()
                 for m in self.modules():
                     if isinstance(m, LinearProximal):
-                        if struc_prune == 2:
+                        if reg_type == 2:
                             l1_reg += (m.weight_u - m.weight_v).square().sum()
                         else:
                             l1_reg += (m.weight_u - m.weight_v).abs().sum()
                     elif isinstance(m, Linear):
-                        if struc_prune == 2:
+                        if reg_type == 2:
                             l1_reg += m.weight.square().sum()
                         else:
                             l1_reg += m.weight.abs().sum()
@@ -439,9 +426,6 @@ class twin_causal(nn.Module):
             if self.verbose:
                 print(f"--------------- Training Performance {epoch} ------------------")
 
-            # if self.save_model:
-            #     self.logger.save_model(self, epoch,best=True)
-
             train_up, train_resp, train_treat, train_err_prop, train_err_up, train_full_loss = test_data(self,
                                                                                                          train_dataloader,
                                                                                                          input_size,
@@ -484,20 +468,18 @@ class twin_causal(nn.Module):
             if self.verbose:
                 print(f"_____ Test Performance {epoch} _________ ")
 
-        if self.plotit:
-            #y_train,y_val,plot_no,title,y_label,x_label="Epochs",color_train='#54B848',color_val='red')
+        if self.learningCurves:
+            # y_train,y_val,plot_no,title,y_label,x_label="Epochs",color_train='#54B848',color_val='red')
             self.logger.plotter(train_err_list, test_err_list, 1, "Learning Curves", "Uplift Loss")
-            #self.logger.plotter(test_err_list, 1, "Learning Curves", "Validation", "Loss", color='red')
-            self.logger.plotter(qini_list, val_qini_list, 2, "Qini Curves", "Qini Coefficient")            
-            #self.logger.plotter(val_qini_list, 2, "Qini Curves", "Validation", "Qini", color='red')     
-            
+            # self.logger.plotter(test_err_list, 1, "Learning Curves", "Validation", "Loss", color='red')
+            self.logger.plotter(qini_list, val_qini_list, 2, "Qini Curves", "Qini Coefficient")
+            # self.logger.plotter(val_qini_list, 2, "Qini Curves", "Validation", "Qini", color='red')
 
         return train_up, train_resp, train_treat, train_err_prop, train_err_up, train_err_list, qini_list
 
     def predict(self, X):
         self.eval()
         with torch.no_grad():
-            
             n_sample = X.shape[0]
             ones = np.ones((n_sample, 1))
             zeros = np.zeros((n_sample, 1))
@@ -510,7 +492,7 @@ class twin_causal(nn.Module):
 
             _, p1, p0 = call(self, X_ones_t.float(), X_zeros_t.float(), treatment_t.float())
             outputs_up = p1 - p0
-            
+
         return outputs_up
 
     def generator(self, scenario):
