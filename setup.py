@@ -24,11 +24,11 @@ setup(
     # Versions comply with PEP 440:
     # twincausal version convention, ("major.minor.micro")
     #
-    version='0.1.6',  # Required
+    version='0.1.7',  # Required
 
     # This is a one-line description or tagline of what the project does. This
     # corresponds to the "Summary" metadata field:
-    description='Twin Neural Network based causal models for Uplift estimation',  # Optional
+    description='Twin Neural Networks for Uplift',  # Optional
     license='MIT License',
     # This is an optional longer description of the project that represents
     # the body of text which users will see when users visit PyPI.
@@ -48,13 +48,13 @@ setup(
     # This should a valid link to the project's main homepage.
     #
     # This field corresponds to the "Home-Page" metadata field:
-    url='https://code.td.com/projects/ADV_PROJ/repos/twin-causal-model/',  # Optional
+    url='https://github.com/belbahrim/twin-causal-net',  # Optional
 
     author='Belbahri, M., Gandouet, O., and Sharoff. P',  # Optional
 
     # This should be a valid email address corresponding to the author listed
     # above.
-    author_email=['mouloud@td.com', 'oliver@td.com', 'sharoff.ponkumar@tdinsurance.com'],  # Optional
+    author_email=['mouloud.belbahri@td.com', 'oliver.gandouet@tdam.com', 'sharoff.ponkumar@tdinsurance.com'],  # Optional
 
     # Classifiers help users find the project by categorizing it.
     classifiers=[  # Optional
@@ -86,7 +86,7 @@ setup(
     # Note that this is a list of additional keywords, separated
     # by commas, to be used to assist searching for the distribution in a
     # larger catalog.
-    keywords='causal_inference, deeplearning,machinelearning',  # Optional
+    keywords='uplift, deeplearning, machinelearning',  # Optional
 
     # When the source code is in a subdirectory under the project root, 
     # it is necessary to specify the `package_dir` argument.
@@ -147,6 +147,6 @@ setup(
         # 'Bug Reports': 'https://github.com/pypa/sampleproject/issues',
         # 'Funding': 'https://donate.pypi.org',
         # 'Say Thanks!': 'http://saythanks.io/to/example',
-        'Source': 'https://code.td.com/projects/ADV_PROJ/repos/twin-causal-model/',
+        'Source': 'https://github.com/belbahrim/twin-causal-net',
     },
 )

@@ -1,22 +1,31 @@
-<!-- <style>
-r { color: Red }
-o { color: Orange }
-g { color: Green }
-</style>
- -->
 # <g> TwinCausalNet
 ![Twin Causal](./images/twin_causal_icon.png)
 ---------------------------------------------------
 
-<!-- <img src="./images/twin_causal_icon.png" alt="logo" width="200"/>
-<img src="./images/twin_causal_icon.png" alt="drawing" style="width:200px;"/> -->
 ### Authors: Belbahri, M.<sup>* </sup>, Gandouet, O.<sup>* </sup>, Sharoff. P <sup>* </sup> 
 
 <sup>* </sup>Equally contributing authors, alphabetical order.
 
 
+Uplift is a particular case of conditional treatment effect modeling with binary outcomes. Such models deal with 
+cause-and-effect inference for a specific factor, such as a marketing intervention or a medical treatment. 
 
-**Requirements**
+The ```twincausal``` library implements the proposed 
+[[twin neural networks for uplift modeling]](https://arxiv.org/pdf/2105.05146.pdf).
+This architecture allows to jointly optimize the marginal probabilities of success for 
+treated and control individuals and the underlying model is a generalization of the 
+uplift logistic interaction model. We modify the stochastic gradient descent implementation 
+to allow for structured sparse solutions (pruning). Each step of the training, it proceeds to update the model parameters 
+in the direction of the gradients to minimize the uplift log-loss. Both structured and unstructured pruning can be used to regularize the model. 
+
+The model supports ```numpy``` arrays int or floats for data ingestion. The goal of the ```twincausal```  library 
+is to make the twin-causal-net implementation accessible to practitioners through a few lines of code, 
+following the ```scikit-learn``` syntax.   
+
+For a complete example, please refer to the following [[notebook]](https://github.com/belbahrim/twin-causal-net/blob/main/examples/twin_causal_examples.ipynb).
+
+
+### Requirements 
 
 To setup the conda environment:
 ```
@@ -30,9 +39,7 @@ To update installation from the file:
 conda env update --file twin-causal-model.yml  --prune
 ```
 
-For a complete example on how to use the library, please refer to the following [[example]](https://github.com/belbahrim/twin-causal-net/blob/main/examples/twin_causal_examples.ipynb).
-
-**Development Instruction**
+### Development Instruction
 
 #### Install the package in editable developer mode
 Use the following command provided in the snippet in the directory containing setup.py file. This avoids creating a copy in the library directory of the environment and runs locally.
@@ -87,7 +94,7 @@ pip show twincausal
 ```
 
 
-**Example Command Interface**
+### Example Command Interface
 
 ```
 >>> import twincausal.utils.data as twindata 
@@ -110,7 +117,7 @@ pip show twincausal
 
 ```
 
-**Test**
+### Test
 
 **1.1 Testing Requirements**
 
@@ -133,7 +140,7 @@ Here is the following, parameter information used to generate the test
 
 *[Add table with the parameter information]*
 
-#### NOTE: For now, the non-prunning eff. no. of neurons stats are specifically set to fake values
+#### NOTE: For now, the non-pruning eff. no. of neurons stats are specifically set to fake values
 
  -->
 
@@ -148,7 +155,7 @@ CLASS twincausal.model.twin_causal(input_size=<required parameter>, hlayers=1, n
 ```
 [[Source]](https://github.com/belbahrim/twin-causal-net)
 
-This model optimizes the uplift log-loss function using stochastic (or proximal) gradient descent.
+The model optimizes the penalized uplift log-loss function using stochastic (or proximal) gradient descent.
 
 
 |   	        |   	|   
@@ -204,19 +211,11 @@ Fit the model to data matrix ```X```, treatment ```treat``` and binary target ``
 |**Returns:**   	|  None |  | 
 
 
-
-### Notes
-
-The ```twincausal``` library helps to train twin-networks for the conditional average treatment effects with binary outcomes.
-Each step of the training, it proceeds to update the model parameters in the direction of the gradients to minimize the uplift loss function.  
-To avoid the over-fitting, both structured and unstructured pruning can be used to regularize the model. The model supports numpy arrays int or floats for data ingestion.   
-
-
 ### Reference and citing
 
  
-If you use ```twincausal``` in a scientific publication, we would appreciate citations to the [[arXiv preprint]](https://arxiv.org/pdf/2105.05146.pdf) 
-while we are developing the open source paper for the Journal of Open Source Software (JOSS). In the meantime please use the weblink to cite our software.
+If you use ```twincausal``` in a scientific publication, we would appreciate citations to the [[technical paper]](https://arxiv.org/pdf/2105.05146.pdf) 
+while we are developing the open source one for the Journal of Open Source Software (JOSS). In the meantime please use the weblink to cite our software.
 
 **A Twin Neural Model for Uplift**  </br>
 Mouloud Belbahri, Olivier Gandouet, Alejandro Murua, Vahid Partovi Nia

@@ -169,7 +169,7 @@ class PGD(torch.optim.Optimizer):
                     else:
                         d_p = buf
 
-                p.data.add_(-group['lr'], d_p)
+                p.data.add_(d_p, alpha=-group['lr'])
 
                 if len(p.data.size()) > 1:
                     p.data.relu_()
