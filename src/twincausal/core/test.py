@@ -44,3 +44,4 @@ def test_data(model, data, input_size, criterion, verbose=False):
             if verbose:
                 print(f"Average uplift-loss: {full_loss / nb_batch}")
     return accumulated_vector_uplift, accumulated_vector_response, accumulated_vector_ctrl_treat, full_loss / nb_batch
+
