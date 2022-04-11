@@ -37,7 +37,7 @@ Not all the events behave similarly nor all factors have the same effect, i.e., 
 [@lamont2018identification] etc.
 The treatment effect models deal with cause-and-effect inference for a specific factor, such as a marketing intervention or a medical treatment. In practice, these models are built on individual data from randomized clinical trials where the goal is to partition the participants into heterogeneous groups depending on the uplift. Most existing approaches are adaptations of random forests for the uplift case. Several split criteria have been proposed in the literature, all relying on maximizing heterogeneity. However, in practice, these approaches are prone to overfitting. In this work, we bring a new vision to uplift modeling. We propose a new loss function defined by leveraging a connection with the Bayesian interpretation of the relative risk. Our solution is developed for a specific twin neural network architecture allowing to jointly optimize the marginal probabilities of success for treated and control individuals. We show that this model is a generalization of the uplift logistic interaction model. We also modify the stochastic gradient descent algorithm to allow for structured sparse solutions. This helps training our uplift models to a great extent. Our proposed method is competitive with the state-of-the-art in simulation setting and on real data from large scale randomized experiments and details of the simulation and the results can be found in [@belbahri2021twin].
 
-![Twin neural network. \label{fig:twin_nn}](./images/twin_nn.jpg)
+![Twin neural network. \label{fig:twin_nn}](./images/twin_architecture.PNG)
 <!-- {#fig:description}
 {width=10%} -->
 

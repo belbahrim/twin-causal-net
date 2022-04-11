@@ -38,5 +38,5 @@ pred = uplift.predict(X_test)
 _, q = qini_curve(T_test, Y_test, pred)
 print('The Qini coefficient is:', q)
 
-_, tau = qini_barplot(T_test, Y_test, pred, p_precision=1, plotit=True)
+_, tau = qini_barplot(T_test, Y_test, pred)
 print('The Uplift correlation is:', tau)
