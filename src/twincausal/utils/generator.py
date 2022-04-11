@@ -123,15 +123,14 @@ def powers_generator(sample_size, nb_features, rho, sigma, theta, scenario=1, se
     f8_x = (1 / np.sqrt(2)) * (f4_x + f5_x)
 
     # Scenarios
-    scenario_dict = {1:[f8_x, f1_x],
-                        2:[f5_x, f2_x],
-                        3:[f4_x,f3_x],
-                        4:[f7_x,f4_x],
-                        5:[f3_x,f5_x],
-                        6:[f1_x,f6_x],
-                        7:[f2_x,f7_x],
-                        8:[f6_x,f8_x]
-                        }
+    scenario_dict = {#   1:[f8_x, f1_x],
+                     #   2:[f5_x, f2_x],
+                     #   3:[f4_x,f3_x],
+                        1:[f7_x, f4_x],
+                        2:[f3_x, f5_x],
+                     #   6:[f1_x,f6_x],
+                        3:[f2_x, f7_x],
+                        4:[f6_x, f8_x]}
     scenario_value = scenario_dict[scenario]
     mu_x = scenario_value[0]
     tau_x = scenario_value[1]
