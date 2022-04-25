@@ -6,8 +6,7 @@ from twincausal.core.test import device_agno
 from twincausal.utils.logger import Logger
 from twincausal.utils.preprocess import read_and_split_data, concat_create_dataset
 from twincausal.losses.losses import uplift_loss, likelihood_version_loss, logistic_loss
-from twincausal.proximal.proximal import PGD
-from twincausal.models.models import LinearProximal
+from twincausal.proximal.proximal import PGD, LinearProximal
 from twincausal.core.test import test_data
 
 # Importing Pytorch and tensorboard
