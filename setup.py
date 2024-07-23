@@ -57,7 +57,7 @@ setup(
                       'tensorboard>=2.3.0',
                       'tensorboardX>=1.9',
                       'tensorboard-plugin-wit>=1.7.0',
-                      'yaml>=0.2.5'
+                      # 'yaml>=0.2.5'
                       ],
 
     # List additional groups of dependencies here (e.g. development
